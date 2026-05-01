@@ -547,17 +547,33 @@ async function doLogin() {
   document.getElementById('login-btn').textContent = 'Verificando...';
   err.textContent = '';
 
+  // Gera variações do número para lidar com o nono dígito do WhatsApp
+  const variantes = [num];
+  // Se tem 13 dígitos (55 + DDD + 9 dígitos), tenta sem o nono dígito
+  if (num.length === 13 && num.startsWith('55')) {
+    variantes.push('55' + num.slice(2, 4) + num.slice(5)); // sem o nono
+  }
+  // Se tem 12 dígitos (55 + DDD + 8 dígitos), tenta com o nono dígito
+  if (num.length === 12 && num.startsWith('55')) {
+    variantes.push('55' + num.slice(2, 4) + '9' + num.slice(4)); // com o nono
+  }
+
   try {
-    const res = await fetch(`${API_BASE}/api/verificar/${num}`);
-    const data = await res.json();
-    if (!data.existe) {
+    let numeroValido = null;
+    for (const variante of variantes) {
+      const res = await fetch(`${API_BASE}/api/verificar/${variante}`);
+      const data = await res.json();
+      if (data.existe) { numeroValido = variante; break; }
+    }
+
+    if (!numeroValido) {
       err.textContent = '❌ Nenhum gasto encontrado para este número. Registre um gasto pelo WhatsApp primeiro!';
       document.getElementById('login-btn').disabled = false;
       document.getElementById('login-btn').textContent = 'Acessar meu painel';
       return;
     }
-    localStorage.setItem('maycon_usuario', num);
-    iniciarApp(num);
+    localStorage.setItem('maycon_usuario', numeroValido);
+    iniciarApp(numeroValido);
   } catch(e) {
     err.textContent = '❌ Erro ao conectar. Verifique sua internet.';
     document.getElementById('login-btn').disabled = false;
