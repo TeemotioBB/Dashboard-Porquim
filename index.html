@@ -273,12 +273,13 @@ body::after {
 
 /* Editar limite btn */
 .limite-edit-btn {
-  display: flex; align-items: center; gap: 6px; margin-top: 12px;
-  background: none; border: 1px solid var(--border); border-radius: 9px;
-  color: var(--muted); font-size: 0.68rem; font-family: var(--font); font-weight: 500;
-  padding: 7px 12px; cursor: pointer; transition: all 0.2s; width: 100%; justify-content: center;
+  display: flex; align-items: center; gap: 7px; margin-top: 13px;
+  background: var(--green-dim); border: 1px solid var(--green-border); border-radius: 10px;
+  color: var(--green); font-size: 0.72rem; font-family: var(--font); font-weight: 600;
+  padding: 9px 14px; cursor: pointer; transition: all 0.2s; width: 100%; justify-content: center;
+  letter-spacing: 0.02em;
 }
-.limite-edit-btn:hover { border-color: var(--green-border); color: var(--green); }
+.limite-edit-btn:hover { background: rgba(0,230,118,0.16); border-color: rgba(0,230,118,0.4); }
 
 /* ══ STATS GRID ════════════════════════════════════════════════════════════ */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 10px; }
@@ -368,6 +369,63 @@ body::after {
 .empty-state { text-align: center; padding: 56px 20px; color: var(--muted); }
 .empty-icon { font-size: 2.2rem; margin-bottom: 12px; opacity: 0.55; }
 .empty-text { font-size: 0.8rem; line-height: 1.7; }
+
+/* ══ FILTRO DE DATA ════════════════════════════════════════════════════════ */
+.date-filter-bar {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 13px 14px; margin-bottom: 10px;
+}
+.date-filter-modes { display: flex; gap: 5px; margin-bottom: 12px; }
+.date-mode-btn {
+  flex: 1; padding: 7px 4px; border-radius: 9px; border: 1px solid var(--border);
+  background: none; color: var(--muted); font-family: var(--font); font-weight: 600;
+  font-size: 0.66rem; cursor: pointer; transition: all 0.2s; letter-spacing: 0.01em; white-space: nowrap;
+}
+.date-mode-btn.active { background: var(--green-dim); border-color: var(--green-border); color: var(--green); }
+.date-inputs { display: flex; align-items: flex-end; gap: 8px; }
+.date-input-wrap { flex: 1; }
+.date-input-label { font-size: 0.56rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; }
+.date-input {
+  width: 100%; background: rgba(255,255,255,0.045); border: 1px solid var(--border);
+  border-radius: 10px; padding: 9px 10px; color: var(--text);
+  font-family: var(--mono); font-size: 0.78rem; outline: none;
+  transition: border-color 0.2s; color-scheme: dark;
+}
+.date-input:focus { border-color: var(--green); }
+.date-range-sep { font-size: 0.7rem; color: var(--muted); padding-bottom: 9px; flex-shrink: 0; }
+.date-filter-row-btns { display: flex; gap: 6px; margin-top: 10px; }
+.date-filter-apply {
+  flex: 2; padding: 9px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--green), var(--green2));
+  border: none; color: #000; font-family: var(--font); font-weight: 700;
+  font-size: 0.76rem; cursor: pointer; transition: all 0.2s;
+}
+.date-filter-apply:hover { filter: brightness(1.08); }
+.date-filter-clear {
+  flex: 1; padding: 9px; border-radius: 10px;
+  background: none; border: 1px solid var(--border); color: var(--muted);
+  font-family: var(--font); font-weight: 500; font-size: 0.72rem; cursor: pointer; transition: all 0.2s;
+}
+.date-filter-clear:hover { border-color: var(--border2); color: var(--muted2); }
+.date-active-badge {
+  display: inline-flex; align-items: center; gap: 5px; margin-bottom: 9px;
+  background: var(--green-dim); border: 1px solid var(--green-border);
+  border-radius: 100px; padding: 4px 10px; font-size: 0.64rem; color: var(--green); font-weight: 600; cursor: pointer;
+}
+.date-active-badge:hover { background: rgba(0,230,118,0.16); }
+.date-filter-toggle {
+  display: flex; align-items: center; gap: 7px; margin-bottom: 10px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 11px;
+  padding: 9px 13px; cursor: pointer; transition: all 0.2s; width: 100%;
+}
+.date-filter-toggle:hover { border-color: var(--border2); }
+.date-filter-toggle.has-filter { border-color: var(--green-border); background: var(--green-dim); }
+.date-filter-toggle-label { flex: 1; font-size: 0.72rem; font-weight: 600; color: var(--muted); text-align: left; }
+.date-filter-toggle.has-filter .date-filter-toggle-label { color: var(--green); }
+.date-filter-toggle-icon { font-size: 0.75rem; color: var(--muted); transition: transform 0.2s; }
+.date-filter-toggle.open .date-filter-toggle-icon { transform: rotate(180deg); }
+.date-filter-panel { overflow: hidden; transition: max-height 0.3s cubic-bezier(0.4,0,0.2,1); max-height: 0; }
+.date-filter-panel.open { max-height: 240px; }
 
 /* ══ GRÁFICOS ════════════════════════════════════════════════════════════ */
 .chart-wrap { position: relative; height: 210px; margin: 6px 0 4px; }
@@ -604,6 +662,49 @@ body::after {
       <div class="tabs-row">
         <button class="tab-btn active-gastos" id="tab-gastos" onclick="mudarTab('gastos')">↓ Gastos</button>
         <button class="tab-btn" id="tab-entradas" onclick="mudarTab('entradas')">↑ Entradas</button>
+      </div>
+
+      <!-- FILTRO DE DATA -->
+      <button class="date-filter-toggle" id="date-filter-toggle" onclick="toggleDateFilter()">
+        <span style="font-size:0.9rem">📅</span>
+        <span class="date-filter-toggle-label" id="date-filter-label">Filtrar por data</span>
+        <span class="date-filter-toggle-icon">▾</span>
+      </button>
+      <div class="date-filter-panel" id="date-filter-panel">
+        <div class="date-filter-bar">
+          <div class="date-filter-modes">
+            <button class="date-mode-btn active" id="dmode-dia" onclick="setDateMode('dia')">Dia</button>
+            <button class="date-mode-btn" id="dmode-periodo" onclick="setDateMode('periodo')">Período</button>
+            <button class="date-mode-btn" id="dmode-mes" onclick="setDateMode('mes')">Mês atual</button>
+          </div>
+          <!-- Modo dia -->
+          <div id="dui-dia" class="date-inputs">
+            <div class="date-input-wrap">
+              <div class="date-input-label">Data</div>
+              <input class="date-input" type="date" id="d-dia">
+            </div>
+          </div>
+          <!-- Modo período -->
+          <div id="dui-periodo" class="date-inputs" style="display:none">
+            <div class="date-input-wrap">
+              <div class="date-input-label">De</div>
+              <input class="date-input" type="date" id="d-inicio">
+            </div>
+            <div class="date-range-sep">→</div>
+            <div class="date-input-wrap">
+              <div class="date-input-label">Até</div>
+              <input class="date-input" type="date" id="d-fim">
+            </div>
+          </div>
+          <!-- Modo mês: nada extra -->
+          <div id="dui-mes" style="display:none;font-size:0.75rem;color:var(--muted2)">
+            Exibindo o mês de <strong id="dui-mes-label" style="color:var(--green)"></strong>
+          </div>
+          <div class="date-filter-row-btns">
+            <button class="date-filter-apply" onclick="aplicarFiltroData()">Filtrar</button>
+            <button class="date-filter-clear" onclick="limparFiltroData()">Limpar</button>
+          </div>
+        </div>
       </div>
 
       <div class="filter-row" id="filter-cats">
@@ -992,6 +1093,96 @@ function mudarTab(tab) {
   renderTransacoes();
 }
 
+// ══ FILTRO DE DATA ═══════════════════════════════════════════════════════════
+let dateMode = 'dia'; // 'dia' | 'periodo' | 'mes'
+let dateFiltroInicio = null; // string 'YYYY-MM-DD'
+let dateFiltroFim = null;
+let dateFilterActive = false;
+
+function toggleDateFilter() {
+  const panel = document.getElementById('date-filter-panel');
+  const toggle = document.getElementById('date-filter-toggle');
+  const isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  toggle.classList.toggle('open', !isOpen);
+}
+
+function setDateMode(mode) {
+  dateMode = mode;
+  document.querySelectorAll('.date-mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('dmode-' + mode).classList.add('active');
+  document.getElementById('dui-dia').style.display = mode === 'dia' ? 'flex' : 'none';
+  document.getElementById('dui-periodo').style.display = mode === 'periodo' ? 'flex' : 'none';
+  document.getElementById('dui-mes').style.display = mode === 'mes' ? 'block' : 'none';
+  if (mode === 'mes') {
+    document.getElementById('dui-mes-label').textContent = MESES[mesAtual] + ' ' + anoAtual;
+  }
+}
+
+function aplicarFiltroData() {
+  if (dateMode === 'dia') {
+    const v = document.getElementById('d-dia').value;
+    if (!v) { showToast('⚠️ Selecione uma data'); return; }
+    dateFiltroInicio = v;
+    dateFiltroFim = v;
+  } else if (dateMode === 'periodo') {
+    const ini = document.getElementById('d-inicio').value;
+    const fim = document.getElementById('d-fim').value;
+    if (!ini || !fim) { showToast('⚠️ Preencha as duas datas'); return; }
+    if (ini > fim) { showToast('⚠️ Data inicial maior que final'); return; }
+    dateFiltroInicio = ini;
+    dateFiltroFim = fim;
+  } else { // mes
+    const primDia = anoAtual + '-' + String(mesAtual).padStart(2,'0') + '-01';
+    const diasMes = DIAS_MES[mesAtual] + (mesAtual === 2 && anoAtual % 4 === 0 ? 1 : 0);
+    const ultDia = anoAtual + '-' + String(mesAtual).padStart(2,'0') + '-' + String(diasMes).padStart(2,'0');
+    dateFiltroInicio = primDia;
+    dateFiltroFim = ultDia;
+  }
+  dateFilterActive = true;
+  atualizarBadgeFiltroData();
+  renderTransacoes();
+  // Fechar painel
+  document.getElementById('date-filter-panel').classList.remove('open');
+  document.getElementById('date-filter-toggle').classList.remove('open');
+}
+
+function limparFiltroData() {
+  dateFiltroInicio = null; dateFiltroFim = null; dateFilterActive = false;
+  document.getElementById('d-dia').value = '';
+  document.getElementById('d-inicio').value = '';
+  document.getElementById('d-fim').value = '';
+  atualizarBadgeFiltroData();
+  renderTransacoes();
+}
+
+function atualizarBadgeFiltroData() {
+  const toggle = document.getElementById('date-filter-toggle');
+  const label = document.getElementById('date-filter-label');
+  if (dateFilterActive && dateFiltroInicio) {
+    toggle.classList.add('has-filter');
+    if (dateFiltroInicio === dateFiltroFim) {
+      const d = new Date(dateFiltroInicio + 'T00:00:00');
+      label.textContent = '📅 ' + d.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
+    } else {
+      const d1 = new Date(dateFiltroInicio + 'T00:00:00');
+      const d2 = new Date(dateFiltroFim + 'T00:00:00');
+      label.textContent = '📅 ' + d1.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' }) + ' → ' + d2.toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
+    }
+  } else {
+    toggle.classList.remove('has-filter');
+    label.textContent = 'Filtrar por data';
+  }
+}
+
+function aplicarFiltroDataEmItems(items) {
+  if (!dateFilterActive || !dateFiltroInicio) return items;
+  return items.filter(item => {
+    const d = item.data; // 'YYYY-MM-DD'
+    return d >= dateFiltroInicio && d <= dateFiltroFim;
+  });
+}
+
 async function carregarTransacoes() {
   document.getElementById('tx-list').innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
   try {
@@ -1013,8 +1204,10 @@ function renderTransacoes() {
   const fonteIcon = { texto: '💬', audio: '🎤', foto: '📸' };
   if (tabAtual === 'gastos') {
     let items = catFiltro ? gastosCache.filter(g => g.categoria === catFiltro) : gastosCache;
+    items = aplicarFiltroDataEmItems(items);
     if (items.length === 0) {
-      list.innerHTML = '<div class="empty-state"><div class="empty-icon">💸</div><div class="empty-text">Nenhum gasto encontrado.<br>Registre pelo WhatsApp!</div></div>';
+      const msg = dateFilterActive ? 'Nenhum gasto neste período.<br>Tente outro filtro de data.' : 'Nenhum gasto encontrado.<br>Registre pelo WhatsApp!';
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">💸</div><div class="empty-text">${msg}</div></div>`;
       return;
     }
     list.innerHTML = items.map(g => {
@@ -1034,8 +1227,10 @@ function renderTransacoes() {
     }).join('');
   } else {
     let items = catFiltroEntrada ? entradasCache.filter(e => e.categoria === catFiltroEntrada) : entradasCache;
+    items = aplicarFiltroDataEmItems(items);
     if (items.length === 0) {
-      list.innerHTML = '<div class="empty-state"><div class="empty-icon">💵</div><div class="empty-text">Nenhuma entrada encontrada.<br>Registre pelo WhatsApp!</div></div>';
+      const msg = dateFilterActive ? 'Nenhuma entrada neste período.<br>Tente outro filtro de data.' : 'Nenhuma entrada encontrada.<br>Registre pelo WhatsApp!';
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">💵</div><div class="empty-text">${msg}</div></div>`;
       return;
     }
     list.innerHTML = items.map(e => {
