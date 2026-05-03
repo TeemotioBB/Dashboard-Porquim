@@ -914,8 +914,10 @@ async function doLogin() {
       err.textContent = '❌ Nenhum registro encontrado para este número. Registre algo pelo WhatsApp primeiro!';
       btn.disabled = false; btn.textContent = 'Entrar no painel'; return;
     }
-    localStorage.setItem('maycon_usuario', num);
-    iniciarApp(num);
+    // Usa o número exato que está no banco (retornado pela API)
+    const numBanco = d.usuario || num;
+    localStorage.setItem('maycon_usuario', numBanco);
+    iniciarApp(numBanco);
   } catch(e) {
     err.textContent = '❌ Erro ao conectar. Verifique sua internet.';
     btn.disabled = false; btn.textContent = 'Entrar no painel';
