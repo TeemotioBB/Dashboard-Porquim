@@ -900,28 +900,22 @@ function fmtShort(v) {
 
 // ══ LOGIN ══════════════════════════════════════════════════════════════════
 async function doLogin() {
-  const num = document.getElementById('login-input').value.replace(/\D/g,'');
+  let num = document.getElementById('login-input').value.replace(/\D/g,'');
+  if (num.startsWith('55') && num.length > 11) num = num.slice(2);
   const err = document.getElementById('login-error');
-  if (num.length < 10) { err.textContent = 'Número inválido. Use o formato completo com DDD.'; return; }
+  if (num.length < 10) { err.textContent = 'Número inválido. Use DDD + número (ex: 31 99999-9999).'; return; }
   const btn = document.getElementById('login-btn');
   btn.disabled = true; btn.textContent = 'Verificando...';
   err.textContent = '';
-  const variantes = [num];
-  if (num.length === 13 && num.startsWith('55')) variantes.push('55' + num.slice(2,4) + num.slice(5));
-  if (num.length === 12 && num.startsWith('55')) variantes.push('55' + num.slice(2,4) + '9' + num.slice(4));
   try {
-    let ok = null;
-    for (const v of variantes) {
-      const r = await fetch(`${API_BASE}/api/verificar/${v}`);
-      const d = await r.json();
-      if (d.existe) { ok = v; break; }
-    }
-    if (!ok) {
+    const r = await fetch(`${API_BASE}/api/verificar/${num}`);
+    const d = await r.json();
+    if (!d.existe) {
       err.textContent = '❌ Nenhum registro encontrado para este número. Registre algo pelo WhatsApp primeiro!';
       btn.disabled = false; btn.textContent = 'Entrar no painel'; return;
     }
-    localStorage.setItem('maycon_usuario', ok);
-    iniciarApp(ok);
+    localStorage.setItem('maycon_usuario', num);
+    iniciarApp(num);
   } catch(e) {
     err.textContent = '❌ Erro ao conectar. Verifique sua internet.';
     btn.disabled = false; btn.textContent = 'Entrar no painel';
@@ -935,7 +929,7 @@ function iniciarApp(num) {
   usuario = num;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').classList.add('visible');
-  document.getElementById('header-user').textContent = '+' + num;
+  document.getElementById('header-user').textContent = num;
   carregarHome();
   carregarTransacoes();
 }
