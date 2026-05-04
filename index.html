@@ -492,6 +492,77 @@ body::after {
 .loader-dot:nth-child(3) { animation-delay: 0.36s; }
 @keyframes bounce { 0%,60%,100%{transform:translateY(0);opacity:0.3} 30%{transform:translateY(-7px);opacity:1} }
 
+/* ══ PLANEJAMENTO ═══════════════════════════════════════════════════════════ */
+.plan-tabs {
+  display: flex; gap: 7px; padding: 4px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; margin-bottom: 14px;
+}
+.plan-tab {
+  flex: 1; padding: 10px; background: transparent; color: var(--muted);
+  border: none; border-radius: 10px; font-family: var(--font); font-weight: 600;
+  font-size: 0.78rem; cursor: pointer; transition: all 0.18s; letter-spacing: 0.01em;
+}
+.plan-tab.active {
+  background: linear-gradient(135deg, var(--green), var(--green2)); color: #000;
+}
+.plan-content { display: none; }
+.plan-content.active { display: block; }
+
+.btn-add-plan {
+  width: 100%; padding: 14px; background: rgba(29,185,84,0.08);
+  border: 1.5px dashed rgba(29,185,84,0.35); border-radius: 14px;
+  color: var(--green); font-family: var(--font); font-weight: 600; font-size: 0.85rem;
+  cursor: pointer; transition: all 0.2s; display: flex; align-items: center;
+  justify-content: center; gap: 7px;
+}
+.btn-add-plan:hover { background: rgba(29,185,84,0.14); border-color: rgba(29,185,84,0.55); }
+
+.plan-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 14px 16px; margin-bottom: 10px;
+}
+.plan-card-head {
+  display: flex; align-items: center; gap: 11px; margin-bottom: 10px;
+}
+.plan-card-emoji { font-size: 1.5rem; }
+.plan-card-info { flex: 1; min-width: 0; }
+.plan-card-desc { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 2px; }
+.plan-card-meta { font-size: 0.74rem; color: var(--muted); }
+.plan-card-val { font-weight: 800; font-size: 1.05rem; color: var(--green); white-space: nowrap; }
+.plan-card-foot {
+  display: flex; gap: 7px; margin-top: 4px;
+}
+.plan-mini-btn {
+  background: rgba(255,82,82,0.1); color: var(--red); border: 1px solid rgba(255,82,82,0.22);
+  padding: 5px 11px; border-radius: 100px; font-size: 0.7rem; font-weight: 600; cursor: pointer;
+  font-family: var(--font); transition: all 0.18s;
+}
+.plan-mini-btn:hover { background: rgba(255,82,82,0.2); }
+
+.parc-progress {
+  height: 5px; background: rgba(255,255,255,0.06); border-radius: 100px;
+  margin-top: 8px; overflow: hidden;
+}
+.parc-progress-bar {
+  height: 100%; background: linear-gradient(90deg, var(--green), var(--green2));
+  border-radius: 100px; transition: width 0.5s;
+}
+
+.lim-cat-bar {
+  height: 5px; background: rgba(255,255,255,0.06); border-radius: 100px;
+  margin-top: 8px; overflow: hidden;
+}
+.lim-cat-bar-fill { height: 100%; border-radius: 100px; transition: width 0.5s; }
+.lim-cat-bar-fill.green { background: linear-gradient(90deg, var(--green), var(--green2)); }
+.lim-cat-bar-fill.yellow { background: linear-gradient(90deg, #ffb300, #ffc940); }
+.lim-cat-bar-fill.red { background: linear-gradient(90deg, var(--red), #ff7373); }
+
+.tx-badge-parc {
+  display: inline-block; background: rgba(29,185,84,0.15); color: var(--green);
+  border: 1px solid rgba(29,185,84,0.3); padding: 1px 7px; border-radius: 100px;
+  font-size: 0.63rem; font-weight: 700; margin-left: 6px;
+}
+
 /* ══ TOAST ════════════════════════════════════════════════════════════════ */
 .toast {
   position: fixed; bottom: calc(var(--nav-h) + var(--sb) + 14px); left: 50%;
@@ -643,6 +714,15 @@ body::after {
         </div>
       </div>
 
+      <!-- Limites por categoria (quando existem) -->
+      <div class="card" id="home-limites-cat-card" style="display:none">
+        <div class="section-label" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Limites por categoria</span>
+          <span style="font-size:0.7rem;color:var(--green);cursor:pointer" onclick="navTo('plan');setTimeout(()=>planTab('lim'),50)">Gerenciar →</span>
+        </div>
+        <div id="home-limites-cat"></div>
+      </div>
+
       <!-- CTA definir limite (quando não existe) -->
       <div id="home-limit-cta" style="display:none" onclick="abrirModalLimite()">
         <div class="limite-cta">
@@ -773,6 +853,42 @@ body::after {
       </div>
     </div>
 
+    <!-- ═══════════════════ PÁGINA: PLANEJAMENTO ═══════════════════ -->
+    <div class="page" id="page-plan">
+      <div class="page-title">Planejamento</div>
+
+      <!-- Sub-tabs -->
+      <div class="plan-tabs">
+        <button class="plan-tab active" data-tab="rec" onclick="planTab('rec')">🔁 Recorrentes</button>
+        <button class="plan-tab" data-tab="parc" onclick="planTab('parc')">💳 Parcelas</button>
+        <button class="plan-tab" data-tab="lim" onclick="planTab('lim')">🎯 Limites</button>
+      </div>
+
+      <!-- Aba: Recorrentes -->
+      <div id="plan-rec" class="plan-content active">
+        <button class="btn-add-plan" onclick="abrirModalRecorrente()">
+          <span style="font-size:1.2rem;">+</span> Novo gasto recorrente
+        </button>
+        <div id="rec-list" style="margin-top:16px;"></div>
+      </div>
+
+      <!-- Aba: Parcelas -->
+      <div id="plan-parc" class="plan-content">
+        <button class="btn-add-plan" onclick="abrirModalParcela()">
+          <span style="font-size:1.2rem;">+</span> Nova compra parcelada
+        </button>
+        <div id="parc-list" style="margin-top:16px;"></div>
+      </div>
+
+      <!-- Aba: Limites por categoria -->
+      <div id="plan-lim" class="plan-content">
+        <button class="btn-add-plan" onclick="abrirModalLimiteCat()">
+          <span style="font-size:1.2rem;">+</span> Novo limite por categoria
+        </button>
+        <div id="lim-list" style="margin-top:16px;"></div>
+      </div>
+    </div>
+
   </div><!-- /pages -->
 
   <!-- BOTTOM NAV -->
@@ -797,6 +913,13 @@ body::after {
         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
       </svg>
       <span class="nav-label">Relatórios</span>
+    </button>
+    <button class="nav-btn" id="nav-plan" onclick="navTo('plan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+      </svg>
+      <span class="nav-label">Plano</span>
     </button>
   </div>
 </div>
@@ -868,6 +991,115 @@ body::after {
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="fecharModal('modal-limite')">Cancelar</button>
       <button class="btn btn-primary" onclick="salvarLimite()">Definir limite</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRIAR RECORRENTE -->
+<div class="modal-overlay" id="modal-recorrente" onclick="fecharModal('modal-recorrente')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Novo gasto recorrente</div>
+    <div class="modal-field">
+      <div class="modal-label">Descrição</div>
+      <input class="modal-input" id="rec-desc" type="text" placeholder="ex: Faculdade">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Valor (R$)</div>
+      <input class="modal-input" id="rec-valor" type="number" step="0.01" placeholder="0,00">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Dia do mês</div>
+      <input class="modal-input" id="rec-dia" type="number" min="1" max="31" placeholder="ex: 10">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Categoria</div>
+      <select class="modal-select" id="rec-cat">
+        <option>Alimentação</option><option>Transporte</option><option>Moradia</option>
+        <option selected>Educação</option><option>Saúde</option><option>Lazer</option>
+        <option>Vestuário</option><option>Outros</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Forma de pagamento</div>
+      <select class="modal-select" id="rec-forma">
+        <option>Desconhecido</option><option>Pix</option><option>Cartão</option><option>Dinheiro</option>
+      </select>
+    </div>
+    <div style="font-size:0.72rem;color:var(--muted);line-height:1.65;margin-bottom:4px">
+      Todo mês no dia escolhido o Johnny vai te perguntar pelo WhatsApp se já pagou.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-recorrente')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarRecorrente()">Criar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRIAR PARCELA -->
+<div class="modal-overlay" id="modal-parcela" onclick="fecharModal('modal-parcela')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Nova compra parcelada</div>
+    <div class="modal-field">
+      <div class="modal-label">Descrição</div>
+      <input class="modal-input" id="parc-desc" type="text" placeholder="ex: TV 55 polegadas">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Valor TOTAL da compra (R$)</div>
+      <input class="modal-input" id="parc-total" type="number" step="0.01" placeholder="ex: 1200">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Número de parcelas</div>
+      <input class="modal-input" id="parc-num" type="number" min="2" max="60" placeholder="ex: 6">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Categoria</div>
+      <select class="modal-select" id="parc-cat">
+        <option>Alimentação</option><option>Transporte</option><option>Moradia</option>
+        <option>Saúde</option><option>Educação</option><option selected>Lazer</option>
+        <option>Vestuário</option><option>Outros</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Forma de pagamento</div>
+      <select class="modal-select" id="parc-forma">
+        <option selected>Cartão</option><option>Pix</option><option>Dinheiro</option><option>Desconhecido</option>
+      </select>
+    </div>
+    <div style="font-size:0.72rem;color:var(--muted);line-height:1.65;margin-bottom:4px">
+      A 1ª parcela será lançada hoje. As demais, automaticamente todo mês.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-parcela')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarParcela()">Registrar compra</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CRIAR LIMITE POR CATEGORIA -->
+<div class="modal-overlay" id="modal-limcat" onclick="fecharModal('modal-limcat')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Limite por categoria</div>
+    <div class="modal-field">
+      <div class="modal-label">Categoria</div>
+      <select class="modal-select" id="limcat-cat">
+        <option>Alimentação</option><option>Transporte</option><option>Moradia</option>
+        <option>Saúde</option><option>Educação</option><option>Lazer</option>
+        <option>Vestuário</option><option>Outros</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Limite mensal (R$)</div>
+      <input class="modal-input" id="limcat-valor" type="number" step="10" placeholder="ex: 200">
+    </div>
+    <div style="font-size:0.72rem;color:var(--muted);line-height:1.65;margin-bottom:4px">
+      Você receberá alertas no WhatsApp quando atingir 80% e 100% deste limite.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-limcat')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarLimiteCategoria()">Definir limite</button>
     </div>
   </div>
 </div>
@@ -945,6 +1177,7 @@ function navTo(page) {
   document.getElementById('page-' + page).classList.add('active');
   document.getElementById('nav-' + page).classList.add('active');
   if (page === 'graficos') carregarGraficos();
+  if (page === 'plan') carregarPlanejamento();
 }
 
 // ══ MÊS ════════════════════════════════════════════════════════════════════
@@ -1068,6 +1301,31 @@ async function carregarHome() {
           </div>
         </div>
       `).join('');
+    }
+
+    // Limites por categoria
+    const limCatCard = document.getElementById('home-limites-cat-card');
+    const limCatEl = document.getElementById('home-limites-cat');
+    if (d.limites_categoria && d.limites_categoria.length > 0) {
+      limCatCard.style.display = '';
+      limCatEl.innerHTML = d.limites_categoria.map(l => {
+        const pct = Math.min(l.pct, 100);
+        const cor = l.pct < 75 ? 'green' : l.pct < 100 ? 'yellow' : 'red';
+        const statusEmoji = l.pct < 75 ? '🟢' : l.pct < 100 ? '🟡' : '🔴';
+        return `
+        <div class="cat-row anim-in" style="margin-bottom:10px">
+          <div class="cat-icon">${l.emoji}</div>
+          <div class="cat-body">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="cat-name">${l.categoria} ${statusEmoji}</div>
+              <div class="cat-val" style="font-size:0.8rem">${fmt(l.gasto)} / ${fmt(l.limite)}</div>
+            </div>
+            <div class="lim-cat-bar"><div class="lim-cat-bar-fill ${cor}" style="width:${pct}%"></div></div>
+          </div>
+        </div>`;
+      }).join('');
+    } else {
+      limCatCard.style.display = 'none';
     }
   } catch(e) { console.error('Erro home:', e); }
 }
@@ -1209,10 +1467,14 @@ function renderTransacoes() {
     list.innerHTML = items.map(g => {
       const data = new Date(g.data + 'T00:00:00');
       const df = data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+      // Badge de parcela: extrai "(3/6)" da descrição se houver
+      const matchParc = g.parcela_id ? g.descricao.match(/\((\d+)\/(\d+)\)$/) : null;
+      const badgeParc = matchParc ? `<span class="tx-badge-parc">${matchParc[1]}/${matchParc[2]}</span>` : '';
+      const descLimpa = matchParc ? g.descricao.replace(/\s*\(\d+\/\d+\)$/, '') : g.descricao;
       return `<div class="tx-item anim-in" onclick="abrirEditar(${g.id})">
         <div class="tx-icon saida">${g.emoji}</div>
         <div class="tx-info">
-          <div class="tx-desc">${g.descricao}</div>
+          <div class="tx-desc">${descLimpa}${badgeParc}</div>
           <div class="tx-meta">${g.categoria} · ${g.forma_pagamento} · ${df}</div>
         </div>
         <div class="tx-right">
@@ -1442,6 +1704,247 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ══ PLANEJAMENTO ═════════════════════════════════════════════════════════════
+let recCache = [], parcCache = [], limCatCache = [];
+
+function planTab(tab) {
+  document.querySelectorAll('.plan-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.plan-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('plan-' + tab).classList.add('active');
+}
+
+async function carregarPlanejamento() {
+  await Promise.all([carregarRecorrentes(), carregarParcelas(), carregarLimitesCategoria()]);
+}
+
+// ── Recorrentes ───────────────────────────────────────────────
+async function carregarRecorrentes() {
+  const list = document.getElementById('rec-list');
+  list.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
+  try {
+    const r = await fetch(`${API_BASE}/api/recorrentes/${usuario}`);
+    const d = await r.json();
+    recCache = d.recorrentes || [];
+    if (!recCache.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">🔁</div><div class="empty-text">Nenhum gasto recorrente.<br>Cadastre o primeiro!</div></div>';
+      return;
+    }
+    list.innerHTML = recCache.map(r => `
+      <div class="plan-card anim-in">
+        <div class="plan-card-head">
+          <div class="plan-card-emoji">${r.emoji}</div>
+          <div class="plan-card-info">
+            <div class="plan-card-desc">${r.descricao}</div>
+            <div class="plan-card-meta">${r.categoria} · todo dia ${r.dia_mes}</div>
+          </div>
+          <div class="plan-card-val">${fmt(r.valor)}</div>
+        </div>
+        <div class="plan-card-foot">
+          <button class="plan-mini-btn" onclick="cancelarRecorrente(${r.id})">Cancelar</button>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-text">Erro ao carregar.</div></div>';
+  }
+}
+
+function abrirModalRecorrente() {
+  ['rec-desc','rec-valor','rec-dia'].forEach(id => document.getElementById(id).value = '');
+  abrirModal('modal-recorrente');
+}
+
+async function salvarRecorrente() {
+  const desc = document.getElementById('rec-desc').value.trim();
+  const valor = parseFloat(document.getElementById('rec-valor').value);
+  const dia = parseInt(document.getElementById('rec-dia').value);
+  const cat = document.getElementById('rec-cat').value;
+  const forma = document.getElementById('rec-forma').value;
+  if (!desc || !valor || valor <= 0 || !dia || dia < 1 || dia > 31) {
+    return showToast('Preencha todos os campos corretamente');
+  }
+  try {
+    const r = await fetch(`${API_BASE}/api/recorrentes/${usuario}`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ descricao: desc, valor, categoria: cat, dia_mes: dia, forma_pagamento: forma })
+    });
+    if (!r.ok) throw new Error();
+    fecharModal('modal-recorrente');
+    showToast('🔁 Recorrente criado!');
+    carregarRecorrentes();
+    carregarHome();
+  } catch {
+    showToast('Erro ao criar');
+  }
+}
+
+async function cancelarRecorrente(id) {
+  if (!confirm('Cancelar este gasto recorrente? Você não receberá mais avisos no WhatsApp.')) return;
+  try {
+    const r = await fetch(`${API_BASE}/api/recorrentes/${usuario}/${id}`, { method: 'DELETE' });
+    if (!r.ok) throw new Error();
+    showToast('🗑️ Recorrente cancelado');
+    carregarRecorrentes();
+    carregarHome();
+  } catch {
+    showToast('Erro ao cancelar');
+  }
+}
+
+// ── Parcelas ──────────────────────────────────────────────────
+async function carregarParcelas() {
+  const list = document.getElementById('parc-list');
+  list.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
+  try {
+    const r = await fetch(`${API_BASE}/api/parcelas/${usuario}`);
+    const d = await r.json();
+    parcCache = d.parcelas || [];
+    if (!parcCache.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">💳</div><div class="empty-text">Nenhuma compra parcelada.<br>Cadastre a primeira!</div></div>';
+      return;
+    }
+    list.innerHTML = parcCache.map(p => {
+      const pct = (p.parcela_atual / p.num_parcelas) * 100;
+      const restantes = p.num_parcelas - p.parcela_atual;
+      const valorRestante = p.valor_parcela * restantes;
+      const statusBadge = !p.ativo
+        ? '<span style="color:var(--muted);font-size:0.7rem;">⏹ cancelada</span>'
+        : '';
+      return `
+      <div class="plan-card anim-in">
+        <div class="plan-card-head">
+          <div class="plan-card-emoji">${p.emoji}</div>
+          <div class="plan-card-info">
+            <div class="plan-card-desc">${p.descricao} ${statusBadge}</div>
+            <div class="plan-card-meta">${p.parcela_atual}/${p.num_parcelas} pagas · ${fmt(p.valor_parcela)}/mês · ${p.forma_pagamento}</div>
+          </div>
+          <div class="plan-card-val">${fmt(p.valor_total)}</div>
+        </div>
+        <div class="parc-progress"><div class="parc-progress-bar" style="width:${pct}%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-top:6px">
+          <span>Restam ${restantes}x</span><span>${fmt(valorRestante)}</span>
+        </div>
+        ${p.ativo ? `<div class="plan-card-foot"><button class="plan-mini-btn" onclick="cancelarParcela(${p.id})">Cancelar futuras</button></div>` : ''}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-text">Erro ao carregar.</div></div>';
+  }
+}
+
+function abrirModalParcela() {
+  ['parc-desc','parc-total','parc-num'].forEach(id => document.getElementById(id).value = '');
+  abrirModal('modal-parcela');
+}
+
+async function salvarParcela() {
+  const desc = document.getElementById('parc-desc').value.trim();
+  const total = parseFloat(document.getElementById('parc-total').value);
+  const num = parseInt(document.getElementById('parc-num').value);
+  const cat = document.getElementById('parc-cat').value;
+  const forma = document.getElementById('parc-forma').value;
+  if (!desc || !total || total <= 0 || !num || num < 2) {
+    return showToast('Preencha todos os campos corretamente');
+  }
+  try {
+    const r = await fetch(`${API_BASE}/api/parcelas/${usuario}`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ descricao: desc, valor_total: total, num_parcelas: num, categoria: cat, forma_pagamento: forma })
+    });
+    if (!r.ok) throw new Error();
+    fecharModal('modal-parcela');
+    showToast('💳 Compra parcelada registrada!');
+    carregarParcelas();
+    carregarHome();
+    carregarTransacoes(); // pra aparecer a 1ª parcela na lista
+  } catch {
+    showToast('Erro ao registrar');
+  }
+}
+
+async function cancelarParcela(id) {
+  if (!confirm('Cancelar parcelas futuras desta compra? As já pagas continuam no histórico.')) return;
+  try {
+    const r = await fetch(`${API_BASE}/api/parcelas/${usuario}/${id}`, { method: 'DELETE' });
+    if (!r.ok) throw new Error();
+    showToast('🗑️ Parcelas futuras canceladas');
+    carregarParcelas();
+  } catch {
+    showToast('Erro ao cancelar');
+  }
+}
+
+// ── Limites por categoria ─────────────────────────────────────
+async function carregarLimitesCategoria() {
+  const list = document.getElementById('lim-list');
+  list.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
+  try {
+    const r = await fetch(`${API_BASE}/api/limites-categoria/${usuario}`);
+    const d = await r.json();
+    limCatCache = d.limites || [];
+    if (!limCatCache.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">🎯</div><div class="empty-text">Nenhum limite por categoria.<br>Crie o primeiro!</div></div>';
+      return;
+    }
+    list.innerHTML = limCatCache.map(l => {
+      const pct = Math.min(l.pct, 100);
+      const cor = l.pct < 75 ? 'green' : l.pct < 100 ? 'yellow' : 'red';
+      const statusEmoji = l.pct < 75 ? '🟢' : l.pct < 100 ? '🟡' : '🔴';
+      return `
+      <div class="plan-card anim-in">
+        <div class="plan-card-head">
+          <div class="plan-card-emoji">${l.emoji}</div>
+          <div class="plan-card-info">
+            <div class="plan-card-desc">${l.categoria}</div>
+            <div class="plan-card-meta">${statusEmoji} ${fmt(l.gasto)} de ${fmt(l.valor)} (${l.pct.toFixed(0)}%)</div>
+          </div>
+        </div>
+        <div class="lim-cat-bar"><div class="lim-cat-bar-fill ${cor}" style="width:${pct}%"></div></div>
+        <div class="plan-card-foot"><button class="plan-mini-btn" onclick="removerLimiteCategoria('${l.categoria}')">Remover</button></div>
+      </div>`;
+    }).join('');
+  } catch {
+    list.innerHTML = '<div class="empty-state"><div class="empty-text">Erro ao carregar.</div></div>';
+  }
+}
+
+function abrirModalLimiteCat() {
+  document.getElementById('limcat-valor').value = '';
+  abrirModal('modal-limcat');
+}
+
+async function salvarLimiteCategoria() {
+  const cat = document.getElementById('limcat-cat').value;
+  const valor = parseFloat(document.getElementById('limcat-valor').value);
+  if (!valor || valor <= 0) return showToast('Valor inválido');
+  try {
+    const r = await fetch(`${API_BASE}/api/limites-categoria/${usuario}`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ categoria: cat, valor })
+    });
+    if (!r.ok) throw new Error();
+    fecharModal('modal-limcat');
+    showToast('🎯 Limite definido!');
+    carregarLimitesCategoria();
+    carregarHome();
+  } catch {
+    showToast('Erro ao definir');
+  }
+}
+
+async function removerLimiteCategoria(categoria) {
+  if (!confirm(`Remover o limite de ${categoria}?`)) return;
+  try {
+    const r = await fetch(`${API_BASE}/api/limites-categoria/${usuario}/${encodeURIComponent(categoria)}`, { method: 'DELETE' });
+    if (!r.ok) throw new Error();
+    showToast('🗑️ Limite removido');
+    carregarLimitesCategoria();
+    carregarHome();
+  } catch {
+    showToast('Erro ao remover');
+  }
 }
 
 // ══ INIT ═══════════════════════════════════════════════════════════════════
